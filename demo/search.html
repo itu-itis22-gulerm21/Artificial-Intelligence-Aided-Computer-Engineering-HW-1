@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brightwave Crawler - Search</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-light: #eff6ff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --white: #ffffff;
+      --green: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+    }
+
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 2rem;
+    }
+
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--blue);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      margin-left: auto;
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .nav-links a {
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      transition: background 0.15s;
+    }
+
+    .nav-links a:hover {
+      background: var(--gray-100);
+    }
+
+    .nav-links a.active {
+      background: var(--blue);
+      color: white;
+    }
+
+    main {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Hero search */
+    .search-hero {
+      text-align: center;
+      padding: 4rem 0 2rem;
+    }
+
+    .search-icon {
+      font-size: 3.5rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .search-title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--blue);
+      margin-bottom: 1.5rem;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.85rem 1.2rem;
+      border: 2px solid var(--gray-200);
+      border-radius: 30px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .search-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .1);
+    }
+
+    .search-btns {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .btn-search {
+      padding: 0.6rem 1.5rem;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-search:hover {
+      background: var(--blue-dark);
+    }
+
+    .btn-lucky {
+      padding: 0.6rem 1.5rem;
+      background: var(--white);
+      color: var(--gray-600);
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-lucky:hover {
+      background: var(--gray-100);
+    }
+
+    /* Results */
+    .results-section {
+      padding-bottom: 3rem;
+    }
+
+    .results-meta {
+      font-size: 0.82rem;
+      color: var(--gray-400);
+      margin-bottom: 1.2rem;
+      padding-top: 0.5rem;
+    }
+
+    .results-meta strong {
+      color: var(--gray-600);
+    }
+
+    .result-item {
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 0.75rem;
+      background: var(--white);
+      transition: box-shadow 0.15s;
+    }
+
+    .result-item:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .result-url {
+      font-size: 0.95rem;
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .result-url:hover {
+      text-decoration: underline;
+    }
+
+    .result-meta {
+      font-size: 0.8rem;
+      color: var(--gray-400);
+      margin-top: 0.3rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .result-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.1rem 0.5rem;
+      background: var(--blue-light);
+      color: var(--blue);
+      border-radius: 4px;
+      font-size: 0.73rem;
+      font-weight: 700;
+    }
+
+    .origin-url {
+      color: var(--gray-600);
+      font-size: 0.78rem;
+      word-break: break-all;
+      margin-top: 0.2rem;
+    }
+
+    .origin-url a {
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    .origin-url a:hover {
+      text-decoration: underline;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      padding: 0.35rem 0.75rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      background: var(--white);
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .page-btn:hover {
+      background: var(--gray-100);
+    }
+
+    .page-btn.active {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--gray-400);
+      padding: 3rem 0;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--gray-400);
+      font-size: 0.78rem;
+      padding: 2rem 0 3rem;
+    }
+
+    footer a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-brand" href="/crawler">🕷️ Brightwave Crawler</a>
+    <div class="nav-links">
+      <a href="/search" class="active">Search</a>
+      <a href="/crawler">Create Crawler</a>
+      <a href="/status">Crawler Status</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="search-hero">
+      <div class="search-icon">🔍</div>
+      <div class="search-title">Search</div>
+      <div class="search-box">
+        <input class="search-input" type="text" id="q" placeholder="Search crawled content…" autocomplete="off"
+          onkeydown="if(event.key==='Enter') doSearch()" />
+      </div>
+      <div class="search-btns">
+        <button class="btn-search" onclick="doSearch()">Search</button>
+        <button class="btn-lucky" onclick="doLucky()">I'm Feeling Lucky</button>
+      </div>
+    </div>
+
+    <div class="results-section" id="results-section" style="display:none">
+      <div class="results-meta" id="results-meta"></div>
+      <div id="results-list"></div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </main>
+
+  <footer>
+    🕷️ Brightwave Crawler Project<br />
+    Created by Melisa Güler for Brightwave<br />
+    Powered by Python + Flask
+  </footer>
+
+  <script>
+    const API = '';
+    let currentQuery = '';
+    let currentPage = 1;
+
+    function getUrlQ() {
+      return new URLSearchParams(window.location.search).get('q') || '';
+    }
+
+    async function doSearch(page = 1) {
+      const q = document.getElementById('q').value.trim();
+      if (!q) return;
+      currentQuery = q;
+      currentPage = page;
+
+      const url = new URL(window.location);
+      url.searchParams.set('q', q);
+      window.history.replaceState({}, '', url);
+
+      try {
+        const r = await fetch(`${API}/api/search?q=${encodeURIComponent(q)}&page=${page}&per_page=20`);
+        const d = await r.json();
+        renderResults(d);
+      } catch (e) {
+        alert('Search failed. Make sure the server is running.');
+      }
+    }
+
+    async function doLucky() {
+      const q = document.getElementById('q').value.trim();
+      if (!q) return;
+      try {
+        const r = await fetch(`${API}/api/search?q=${encodeURIComponent(q)}&lucky=true`);
+        const d = await r.json();
+        if (d.result && d.result.url) {
+          window.open(d.result.url, '_blank');
+        } else {
+          alert('No results found for "' + q + '"');
+        }
+      } catch (e) { }
+    }
+
+    function renderResults(d) {
+      const section = document.getElementById('results-section');
+      section.style.display = 'block';
+      const meta = document.getElementById('results-meta');
+      meta.innerHTML = `<strong>${d.total.toLocaleString()} results</strong> (${d.query})`;
+
+      const list = document.getElementById('results-list');
+      if (d.results.length === 0) {
+        list.innerHTML = `<div class="empty-state">
+      <div style="font-size:2rem;margin-bottom:0.5rem">🔎</div>
+      No results found for "<strong>${escapeHtml(d.query)}</strong>".<br/>
+      <small>Try crawling more pages first.</small>
+    </div>`;
+        document.getElementById('pagination').innerHTML = '';
+        return;
+      }
+
+      list.innerHTML = d.results.map(r => `
+    <div class="result-item">
+      <a class="result-url" href="${escapeHtml(r.url)}" target="_blank">${escapeHtml(r.url)}</a>
+      <div class="result-meta">
+        <span>Keyword: <span class="tag">${escapeHtml(r.word)}</span></span>
+        <span>Frequency: <strong>${r.frequency}</strong></span>
+        <span>Depth: <strong>${r.depth}</strong></span>
+      </div>
+      <div class="origin-url">Origin: <a href="${escapeHtml(r.origin)}" target="_blank">${escapeHtml(r.origin)}</a></div>
+    </div>
+  `).join('');
+
+      // Pagination
+      const pages = d.pages || 1;
+      const cur = d.page || 1;
+      const pagEl = document.getElementById('pagination');
+      if (pages <= 1) { pagEl.innerHTML = ''; return; }
+
+      let html = '';
+      if (cur > 1) html += `<button class="page-btn" onclick="doSearch(${cur - 1})">‹ Prev</button>`;
+      for (let p = Math.max(1, cur - 2); p <= Math.min(pages, cur + 2); p++) {
+        html += `<button class="page-btn ${p === cur ? 'active' : ''}" onclick="doSearch(${p})">${p}</button>`;
+      }
+      if (cur < pages) html += `<button class="page-btn" onclick="doSearch(${cur + 1})">Next ›</button>`;
+      pagEl.innerHTML = html;
+    }
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Init: run search from URL param
+    const initQ = getUrlQ();
+    if (initQ) {
+      document.getElementById('q').value = initQ;
+      doSearch();
+    }
+  </script>
+</body>
+
+</html>

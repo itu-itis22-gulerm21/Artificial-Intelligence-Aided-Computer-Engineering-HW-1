@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brightwave Crawler - Status</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --white: #ffffff;
+      --green: #16a34a;
+      --red: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+    }
+
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 2rem;
+    }
+
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--blue);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      margin-left: auto;
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .nav-links a {
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      transition: background 0.15s;
+    }
+
+    .nav-links a:hover {
+      background: var(--gray-100);
+    }
+
+    .nav-links a.active {
+      background: var(--blue);
+      color: white;
+    }
+
+    .lookup-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0.7rem 2rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .lookup-label {
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .lookup-bar input {
+      flex: 1;
+      max-width: 500px;
+      padding: 0.45rem 0.75rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .lookup-bar input:focus {
+      border-color: var(--blue);
+    }
+
+    .btn-view {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 0.45rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.87rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-view:hover {
+      background: var(--blue-dark);
+    }
+
+    main {
+      max-width: 900px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .crawler-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .crawler-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .badge-active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-finished {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+
+    .badge-paused {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .badge-stopped {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-pending {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .crawler-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-action {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.35rem 0.8rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      background: var(--white);
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: background 0.15s;
+    }
+
+    .btn-action:hover {
+      background: var(--gray-100);
+    }
+
+    .btn-action.danger {
+      color: var(--red);
+      border-color: #fca5a5;
+    }
+
+    .btn-action.danger:hover {
+      background: #fee2e2;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem 2rem;
+    }
+
+    .info-item label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 0.1rem;
+    }
+
+    .info-item span,
+    .info-item a {
+      font-size: 0.9rem;
+      color: var(--gray-800);
+    }
+
+    .info-item a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .info-item a:hover {
+      text-decoration: underline;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--green);
+      margin-top: 0.75rem;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-download {
+      padding: 0.3rem 0.7rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      background: var(--white);
+      cursor: pointer;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-download:hover {
+      background: var(--gray-100);
+    }
+
+    .queue-list {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      line-height: 1.7;
+    }
+
+    .logs-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.76rem;
+      line-height: 1.6;
+    }
+
+    .all-crawlers-list {
+      margin-top: 0.5rem;
+    }
+
+    .mini-crawler {
+      border: 1px solid var(--gray-200);
+      border-radius: 7px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .mini-id {
+      font-weight: 700;
+      color: var(--blue);
+      text-decoration: none;
+      font-size: 0.87rem;
+    }
+
+    .mini-id:hover {
+      text-decoration: underline;
+    }
+
+    .mini-meta {
+      font-size: 0.78rem;
+      color: var(--gray-600);
+    }
+
+    .mini-meta a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .no-crawler {
+      text-align: center;
+      padding: 3rem;
+      color: var(--gray-400);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--gray-400);
+      font-size: 0.78rem;
+      padding: 2rem 0 3rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-brand" href="/crawler">🕷️ Brightwave Crawler</a>
+    <div class="nav-links">
+      <a href="/search">Search</a>
+      <a href="/crawler">Create Crawler</a>
+      <a href="/status" class="active">Crawler Status</a>
+    </div>
+  </nav>
+
+  <div class="lookup-bar">
+    <span class="lookup-label">✦ Crawler ID:</span>
+    <input type="text" id="cid-input" placeholder="Enter crawler ID…" />
+    <button class="btn-view" onclick="viewById()">📊 View Status</button>
+  </div>
+
+  <main>
+    <div id="crawler-detail" style="display:none">
+      <div class="card">
+        <div class="crawler-header">
+          <div>
+            <div class="crawler-title" id="d-title">Crawler —</div>
+          </div>
+          <span class="badge" id="d-badge">—</span>
+          <div class="crawler-actions">
+            <button class="btn-action" onclick="refreshDetail()">↻ Refresh</button>
+            <button class="btn-action" id="btn-pause" onclick="pauseActive()">⏸ Pause</button>
+            <button class="btn-action danger" id="btn-stop" onclick="stopActive()">🔴 Stop</button>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item"><label>Origin URL</label><a id="d-origin" href="#" target="_blank">—</a></div>
+          <div class="info-item"><label>Max Depth</label><span id="d-depth">—</span></div>
+          <div class="info-item"><label>URLs Visited</label><span id="d-visited">—</span></div>
+          <div class="info-item"><label>Hit Rate</label><span id="d-hitrate">—</span></div>
+          <div class="info-item"><label>Queue Size</label><span id="d-qsize">—</span></div>
+          <div class="info-item"><label>Started</label><span id="d-started">—</span></div>
+          <div class="info-item"><label>Last Update</label><span id="d-updated">—</span></div>
+        </div>
+
+        <div class="live-badge" id="live-indicator">
+          <div class="live-dot"></div>
+          Live updates enabled (refreshing every 3 seconds)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">🗂️ Current Queue</div>
+          <button class="btn-download" onclick="downloadQueue()">⬇ Download Queue</button>
+        </div>
+        <div class="queue-list" id="d-queue">—</div>
+      </div>
+
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">📋 Crawler Logs</div>
+          <button class="btn-download" onclick="downloadLogs()">⬇ Download Logs</button>
+        </div>
+        <div class="logs-box" id="d-logs"></div>
+      </div>
+    </div>
+
+    <div id="no-crawler-msg" class="card no-crawler" style="display:none">
+      <div style="font-size:2rem;margin-bottom:0.5rem">🔍</div>
+      Crawler not found. Check the ID or <a href="/crawler" style="color:var(--blue)">create a new one</a>.
+    </div>
+
+    <div class="card" id="all-card">
+      <div class="section-title" style="margin-bottom:0.6rem;">🗂️ All Crawlers</div>
+      <div style="font-size:0.82rem;color:var(--gray-400);margin-bottom:0.75rem;">Click on any crawler ID to view its
+        status.</div>
+      <div id="all-meta" style="font-size:0.82rem;color:var(--gray-600);margin-bottom:0.75rem;"></div>
+      <div class="all-crawlers-list" id="all-list"></div>
+    </div>
+  </main>
+
+  <footer>
+
+    🕷️ Brightwave Crawler Project<br />
+    Created by Melisa Gülerfor Brightwave<br />
+    Powered by Python + Flask
+
+  </footer>
+
+  <script>
+    const API = '';
+    let activeCrawlerId = null;
+    let currentState = null;
+
+    // ---- Long-poll state ----
+    let _pollAbort = null;   // AbortController for the in-flight long-poll request
+    let _logCursor = 0;      // number of log lines the client has already seen
+    let _polling = false;  // guard against concurrent poll loops
+
+    function parseIdFromUrl() {
+      const p = new URLSearchParams(window.location.search);
+      return p.get('id') || '';
+    }
+
+    async function viewById() {
+      const id = document.getElementById('cid-input').value.trim();
+      if (!id) return;
+      const url = new URL(window.location);
+      url.searchParams.set('id', id);
+      window.history.replaceState({}, '', url);
+      await loadCrawler(id);
+    }
+
+    async function loadCrawler(id) {
+      stopPolling();
+      activeCrawlerId = id;
+      _logCursor = 0;
+      document.getElementById('cid-input').value = id;
+      try {
+        const r = await fetch(API + `/api/crawlers/${id}`);
+        if (!r.ok) { showNotFound(); return; }
+        const d = await r.json();
+        currentState = d;
+        renderDetail(d);
+        document.getElementById('crawler-detail').style.display = 'block';
+        document.getElementById('no-crawler-msg').style.display = 'none';
+        _logCursor = (d.logs || []).length;
+
+        if (d.status === 'active' || d.status === 'paused') {
+          document.getElementById('live-indicator').style.display = 'flex';
+          startPolling();
+        } else {
+          document.getElementById('live-indicator').style.display = 'none';
+        }
+      } catch (e) { showNotFound(); }
+    }
+
+    function showNotFound() {
+      document.getElementById('crawler-detail').style.display = 'none';
+      document.getElementById('no-crawler-msg').style.display = 'block';
+    }
+
+    // ---- True long-polling loop ----
+    // Each call opens ONE fetch to /api/crawlers/<id>/poll?last_log=N.
+    // The server holds that request until new data arrives (up to ~25 s), then
+    // responds.  The client immediately re-opens another request — giving
+    // continuous near-real-time updates without a fixed polling interval.
+
+    function startPolling() {
+      if (_polling) return;
+      _polling = true;
+      _doPoll();
+    }
+
+    function stopPolling() {
+      _polling = false;
+      if (_pollAbort) { _pollAbort.abort(); _pollAbort = null; }
+    }
+
+    async function _doPoll() {
+      while (_polling && activeCrawlerId) {
+        _pollAbort = new AbortController();
+        try {
+          const r = await fetch(
+            API + `/api/crawlers/${activeCrawlerId}/poll?last_log=${_logCursor}`,
+            { signal: _pollAbort.signal }
+          );
+          if (!r.ok) { await _sleep(2000); continue; }
+
+          const d = await r.json();
+          currentState = d;
+          _logCursor = d.log_cursor ?? (d.logs || []).length;
+          renderDetail(d);
+
+          // Stop looping once the job reaches a terminal state
+          if (!['active', 'paused'].includes(d.status)) {
+            document.getElementById('live-indicator').style.display = 'none';
+            stopPolling();
+            return;
+          }
+        } catch (e) {
+          if (e.name === 'AbortError') return;   // intentionally cancelled
+          await _sleep(3000);                    // brief back-off on network error
+        }
+      }
+    }
+
+    function _sleep(ms) { return new Promise(res => setTimeout(res, ms)); }
+
+    // Manual refresh still works — useful after pause/resume/stop
+    async function refreshDetail() {
+      if (!activeCrawlerId) return;
+      try {
+        const r = await fetch(API + `/api/crawlers/${activeCrawlerId}`);
+        if (!r.ok) return;
+        const d = await r.json();
+        currentState = d;
+        _logCursor = (d.logs || []).length;
+        renderDetail(d);
+        if (!['active', 'paused'].includes(d.status)) {
+          document.getElementById('live-indicator').style.display = 'none';
+          stopPolling();
+        }
+      } catch (e) { }
+    }
+
+
+    function renderDetail(d) {
+      document.getElementById('d-title').textContent = `Crawler ${d.id}`;
+      const badge = document.getElementById('d-badge');
+      badge.textContent = capitalize(d.status);
+      badge.className = `badge badge-${d.status}`;
+
+      document.getElementById('d-origin').textContent = d.origin;
+      document.getElementById('d-origin').href = d.origin;
+      document.getElementById('d-depth').textContent = `${d.max_depth}`;
+      document.getElementById('d-visited').textContent = `${d.urls_visited_count ?? 0}`;
+      document.getElementById('d-hitrate').textContent = `${d.hit_rate} hits/sec`;
+      document.getElementById('d-qsize').textContent = `${d.queue_size ?? 0}`;
+      document.getElementById('d-started').textContent = formatDate(d.started_at);
+      document.getElementById('d-updated').textContent = formatDate(d.last_update);
+
+      // Queue
+      const qprev = d.queue_preview || [];
+      const qdepths = d.queue_preview_depths || [];
+      const qHtml = qprev.length
+        ? qprev.map((u, i) => `${u} (depth: ${qdepths[i] ?? '?'})`).join('<br/>')
+        : '<em style="color:var(--gray-400)">Queue is empty</em>';
+      document.getElementById('d-queue').innerHTML = qHtml;
+
+      // Logs
+      const logs = d.logs || [];
+      const logsEl = document.getElementById('d-logs');
+      logsEl.innerHTML = logs.map(l => escapeHtml(l)).join('<br/>');
+      logsEl.scrollTop = logsEl.scrollHeight;
+
+      // Toggle buttons
+      const isPauseable = d.status === 'active';
+      const isResumable = d.status === 'paused';
+      const isStoppable = ['active', 'paused'].includes(d.status);
+      const btnPause = document.getElementById('btn-pause');
+      const btnStop = document.getElementById('btn-stop');
+      if (isResumable) {
+        btnPause.textContent = '▶ Resume';
+        btnPause.onclick = resumeActive;
+      } else {
+        btnPause.textContent = '⏸ Pause';
+        btnPause.onclick = pauseActive;
+      }
+      btnPause.style.display = (isPauseable || isResumable) ? '' : 'none';
+      btnStop.style.display = isStoppable ? '' : 'none';
+    }
+
+    async function pauseActive() {
+      if (!activeCrawlerId) return;
+      await fetch(API + `/api/crawlers/${activeCrawlerId}/pause`, { method: 'POST' });
+      refreshDetail();
+    }
+    async function resumeActive() {
+      if (!activeCrawlerId) return;
+      await fetch(API + `/api/crawlers/${activeCrawlerId}/resume`, { method: 'POST' });
+      startPolling();
+      refreshDetail();
+    }
+    async function stopActive() {
+      if (!activeCrawlerId) return;
+      if (!confirm('Stop this crawler?')) return;
+      stopPolling();
+      await fetch(API + `/api/crawlers/${activeCrawlerId}/stop`, { method: 'POST' });
+      refreshDetail();
+    }
+
+
+    function downloadQueue() {
+      if (!currentState) return;
+      const q = (currentState.queue_preview || []).map((u, i) =>
+        `${u} (depth: ${(currentState.queue_preview_depths || [])[i] ?? '?'})`
+      ).join('\n');
+      downloadText(q, `queue_${activeCrawlerId}.txt`);
+    }
+
+    function downloadLogs() {
+      if (!currentState) return;
+      downloadText((currentState.logs || []).join('\n'), `logs_${activeCrawlerId}.txt`);
+    }
+
+    function downloadText(text, filename) {
+      const a = document.createElement('a');
+      a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+      a.download = filename;
+      a.click();
+    }
+
+    async function loadAllCrawlers() {
+      try {
+        const r = await fetch(API + '/api/crawlers');
+        const d = await r.json();
+        const list = d.crawlers || [];
+        const active = list.filter(c => c.status === 'active').length;
+        document.getElementById('all-meta').textContent = `Total: ${list.length} crawlers | Active: ${active}`;
+        document.getElementById('all-list').innerHTML = list.map(c => `
+      <div class="mini-crawler">
+        <span class="badge badge-${c.status}" style="flex-shrink:0">${capitalize(c.status)}</span>
+        <div>
+          <a class="mini-id" href="/status?id=${c.id}">${c.id}</a>
+          <div class="mini-meta">Origin: <a href="${c.origin}" target="_blank">${c.origin}</a></div>
+          <div class="mini-meta">URLs Visited: ${c.urls_visited_count ?? 0} | Created: ${formatDate(c.started_at)}</div>
+        </div>
+      </div>
+    `).join('');
+      } catch (e) { }
+    }
+
+    function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+    function formatDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleString(); } catch (e) { return iso; }
+    }
+    function escapeHtml(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // Init
+    const initId = parseIdFromUrl();
+    if (initId) { loadCrawler(initId); }
+    loadAllCrawlers();
+    setInterval(loadAllCrawlers, 5000);
+  </script>
+</body>
+
+</html>

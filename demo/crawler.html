@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brightwave Crawler - Create</title>
+  <style>
+    :root {
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-light: #eff6ff;
+      --green: #16a34a;
+      --red: #dc2626;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+    }
+
+    /* Nav */
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      height: 56px;
+      gap: 2rem;
+    }
+
+    .nav-brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--blue);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      margin-left: auto;
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .nav-links a {
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      transition: background 0.15s;
+    }
+
+    .nav-links a:hover {
+      background: var(--gray-100);
+    }
+
+    .nav-links a.active {
+      background: var(--blue);
+      color: white;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-200);
+      padding: 0.6rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .stat-val {
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    .stat-active {
+      color: #16a34a;
+    }
+
+    .btn-clear {
+      margin-left: auto;
+      background: var(--red);
+      color: white;
+      border: none;
+      padding: 0.35rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .btn-clear:hover {
+      background: #b91c1c;
+    }
+
+    /* Main */
+    main {
+      max-width: 780px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-grid.full {
+      grid-template-columns: 1fr;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      margin-bottom: 0.3rem;
+    }
+
+    label span {
+      color: var(--red);
+    }
+
+    input[type=text],
+    input[type=number],
+    input[type=url] {
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+    }
+
+    .btn-start {
+      width: 100%;
+      padding: 0.75rem;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      transition: background 0.15s;
+    }
+
+    .btn-start:hover {
+      background: var(--blue-dark);
+    }
+
+    .btn-start:disabled {
+      background: var(--gray-400);
+      cursor: not-allowed;
+    }
+
+    /* Success */
+    .success-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 1.2rem 1.5rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .success-box.show {
+      display: block;
+    }
+
+    .success-title {
+      color: var(--green);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .success-detail {
+      font-size: 0.87rem;
+      color: var(--gray-600);
+      margin: 0.15rem 0;
+    }
+
+    .btn-view-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.7rem;
+      padding: 0.45rem 1rem;
+      background: var(--blue);
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.87rem;
+      font-weight: 600;
+    }
+
+    /* Recent crawlers */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .section-meta {
+      font-size: 0.82rem;
+      color: var(--gray-400);
+      margin-bottom: 1rem;
+    }
+
+    .crawler-card {
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .crawler-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .crawler-id-link {
+      font-weight: 700;
+      color: var(--blue);
+      text-decoration: none;
+      font-size: 0.92rem;
+    }
+
+    .crawler-id-link:hover {
+      text-decoration: underline;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .badge-active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-finished {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+
+    .badge-paused {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .badge-stopped {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .crawler-meta {
+      font-size: 0.8rem;
+      color: var(--gray-600);
+      margin: 0.15rem 0;
+    }
+
+    .crawler-meta a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    .crawler-meta a:hover {
+      text-decoration: underline;
+    }
+
+    .crawler-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.7rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-sm {
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: background 0.15s;
+    }
+
+    .btn-sm:hover {
+      background: var(--gray-100);
+    }
+
+    .btn-sm.danger {
+      color: var(--red);
+      border-color: #fca5a5;
+    }
+
+    .btn-sm.danger:hover {
+      background: #fee2e2;
+    }
+
+    .btn-sm.primary {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    .btn-sm.primary:hover {
+      background: var(--blue-dark);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--gray-400);
+      padding: 2rem;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--gray-400);
+      font-size: 0.78rem;
+      padding: 2rem 0 3rem;
+    }
+
+    footer a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a class="nav-brand" href="/crawler">🕷️ Brightwave Crawler</a>
+    <div class="nav-links">
+      <a href="/search">Search</a>
+      <a href="/crawler" class="active">Create Crawler</a>
+      <a href="/status">Crawler Status</a>
+    </div>
+  </nav>
+
+  <div class="stats-bar">
+    <div class="stat-item">URLs Visited: <span class="stat-val" id="s-urls">0</span></div>
+    <div class="stat-item">Words in DB: <span class="stat-val" id="s-words">0</span></div>
+    <div class="stat-item"><span class="stat-active">✦</span> Active Crawlers: <span class="stat-val"
+        id="s-active">0</span></div>
+    <div class="stat-item">Total Created: <span class="stat-val" id="s-total">0</span></div>
+    <button class="btn-clear" onclick="clearAll()">🔴 Clear</button>
+    <span style="cursor:pointer;font-size:1.1rem;" title="Refresh stats" onclick="loadStats()">↻</span>
+  </div>
+
+  <main>
+    <div class="card">
+      <div class="card-title">🚀 Create New Crawler</div>
+
+      <div class="form-grid full">
+        <div>
+          <label>Origin URL <span>*</span></label>
+          <input type="url" id="origin" placeholder="https://example.com"
+            value="https://en.wikipedia.org/wiki/Main_Page" />
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label>Max Depth <span>*</span></label>
+          <input type="number" id="max_depth" value="3" min="1" max="10" />
+        </div>
+        <div></div>
+      </div>
+
+      <div class="form-grid">
+        <div>
+          <label>Hit Rate (/sec)</label>
+          <input type="number" id="hit_rate" value="1" min="0.1" max="100" step="0.1" />
+        </div>
+        <div>
+          <label>Queue Capacity</label>
+          <input type="number" id="queue_capacity" value="10000" min="10" />
+        </div>
+        <div>
+          <label>Max URLs to Visit</label>
+          <input type="number" id="max_urls" value="100" min="1" />
+        </div>
+      </div>
+
+      <button class="btn-start" id="btn-start" onclick="startCrawler()">
+        ✦ Start Crawler
+      </button>
+
+      <div class="success-box" id="success-box">
+        <div class="success-title">🎉 Crawler created successfully!</div>
+        <div class="success-detail">Crawler ID: <strong id="suc-id"></strong></div>
+        <div class="success-detail">Status: <strong>Active</strong></div>
+        <a class="btn-view-status" id="suc-link" href="#">📊 View Status</a>
+      </div>
+    </div>
+
+    <div class="card" id="recent-section">
+      <div class="section-title">🗂️ Recent Crawlers</div>
+      <div class="section-meta" id="recent-meta">Loading…</div>
+      <div id="recent-list"></div>
+    </div>
+  </main>
+
+  <footer>
+    🕷️ Brightwave Crawler Project<br />
+    Created by Melisa Gülerfor Brightwave<br />
+    Powered by Python + Flask
+  </footer>
+
+  <script>
+    const API = '';
+
+    async function loadStats() {
+      try {
+        const r = await fetch(API + '/api/stats');
+        const d = await r.json();
+        document.getElementById('s-urls').textContent = d.urls_visited.toLocaleString();
+        document.getElementById('s-words').textContent = d.words_in_db.toLocaleString();
+        document.getElementById('s-active').textContent = d.active_crawlers;
+        document.getElementById('s-total').textContent = d.total_created;
+      } catch (e) { }
+    }
+
+    async function loadRecent() {
+      try {
+        const r = await fetch(API + '/api/crawlers');
+        const d = await r.json();
+        const list = d.crawlers || [];
+        const meta = document.getElementById('recent-meta');
+        const container = document.getElementById('recent-list');
+        const active = list.filter(c => c.status === 'active').length;
+        meta.textContent = `Total: ${list.length} crawlers | Active: ${active}`;
+        if (list.length === 0) {
+          container.innerHTML = '<div class="empty-state">No crawlers yet. Create one above!</div>';
+          return;
+        }
+        container.innerHTML = list.map(c => `
+      <div class="crawler-card">
+        <div class="crawler-header">
+          <a class="crawler-id-link" href="/status?id=${c.id}">${c.id}</a>
+          <span class="badge badge-${c.status}">${capitalize(c.status)}</span>
+        </div>
+        <div class="crawler-meta">Created: ${formatDate(c.started_at)}</div>
+        <div class="crawler-meta">Origin: <a href="${c.origin}" target="_blank">${c.origin}</a></div>
+        <div class="crawler-meta">URLs Visited: ${c.urls_visited_count ?? 0} | Last Updated: ${formatDate(c.last_update)}</div>
+        <div class="crawler-actions">
+          <a class="btn-sm primary" href="/status?id=${c.id}">📊 View Status</a>
+          ${c.status === 'active' ? `<button class="btn-sm" onclick="pauseCrawler('${c.id}')">⏸ Pause</button>` : ''}
+          ${c.status === 'paused' ? `<button class="btn-sm" onclick="resumeCrawler('${c.id}')">▶ Resume</button>` : ''}
+          ${['active', 'paused'].includes(c.status) ? `<button class="btn-sm danger" onclick="stopCrawler('${c.id}')">🔴 Stop</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+      } catch (e) { }
+    }
+
+    async function startCrawler() {
+      const btn = document.getElementById('btn-start');
+      btn.disabled = true;
+      btn.textContent = 'Starting…';
+      try {
+        const r = await fetch(API + '/api/crawl', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            origin: document.getElementById('origin').value.trim(),
+            max_depth: parseInt(document.getElementById('max_depth').value),
+            hit_rate: parseFloat(document.getElementById('hit_rate').value),
+            queue_capacity: parseInt(document.getElementById('queue_capacity').value),
+            max_urls: parseInt(document.getElementById('max_urls').value),
+          })
+        });
+        const d = await r.json();
+        if (d.error) { alert(d.error); return; }
+
+        const box = document.getElementById('success-box');
+        document.getElementById('suc-id').textContent = d.crawler_id;
+        document.getElementById('suc-link').href = `/status?id=${d.crawler_id}`;
+        box.classList.add('show');
+
+        loadStats();
+        loadRecent();
+      } catch (e) {
+        alert('Failed to connect to server. Make sure app.py is running on port 5000.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '✦ Start Crawler';
+      }
+    }
+
+    async function pauseCrawler(id) {
+      await fetch(API + `/api/crawlers/${id}/pause`, { method: 'POST' });
+      loadRecent();
+    }
+    async function resumeCrawler(id) {
+      await fetch(API + `/api/crawlers/${id}/resume`, { method: 'POST' });
+      loadRecent();
+    }
+    async function stopCrawler(id) {
+      if (!confirm('Stop this crawler?')) return;
+      await fetch(API + `/api/crawlers/${id}/stop`, { method: 'POST' });
+      loadRecent();
+    }
+    async function clearAll() {
+      if (!confirm('Clear ALL crawled data? This cannot be undone.')) return;
+      await fetch(API + '/api/clear', { method: 'POST' });
+      loadStats();
+      loadRecent();
+      document.getElementById('success-box').classList.remove('show');
+    }
+
+    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    function formatDate(iso) {
+      if (!iso) return '—';
+      try { return new Date(iso).toLocaleString(); } catch (e) { return iso; }
+    }
+
+    // Init
+    loadStats();
+    loadRecent();
+    setInterval(() => { loadStats(); loadRecent(); }, 5000);
+  </script>
+</body>
+
+</html>
