@@ -73,7 +73,10 @@ def search(query: str, page: int = 1, per_page: int = 20) -> dict:
                             "matched_words": {},
                         }
 
-                    url_scores[url]["score"] += freq
+                    # score = (frequency x 10) + 1000 (exact match bonus) - (depth x 5)
+                    is_exact = word in words
+                    entry_score = (freq * 10) + (1000 if is_exact else 0) - (depth * 5)
+                    url_scores[url]["score"] += entry_score
                     url_scores[url]["matched_words"][word] = freq
         except OSError:
             continue
@@ -97,7 +100,7 @@ def search(query: str, page: int = 1, per_page: int = 20) -> dict:
             "url": r["url"],
             "origin": r["origin"],
             "depth": r["depth"],
-            "score": r["score"],
+            "relevance_score": r["score"],
             "word": best_word,
             "frequency": r["matched_words"].get(best_word, 0),
         })
